@@ -21,10 +21,11 @@ The spectrometer community is still small. There are overlaps with the Pocket Sc
 |   **Feature**       | **Description**                                                      | **Status**            |
 |---------------------|----------------------------------------------------------------------|-----------------------|
 | USB Connection      | Transmit data using USB from a compatible spectrometer to a computer | :heavy_check_mark:    |
-| Generate PNG        | Run analyse.py script and generate png file                          | :heavy_check_mark:    |
+| Generate PNG        | Run analyse.py script and generate png file with online service      | :heavy_check_mark:    |
 | Calibration         | Calibrate using calibrate.py                                         | :heavy_check_mark:    |
 | Scripts in Browers  | Scripts can be executed in the browser using repl.it                 | :heavy_check_mark:    |
-| Scripts Locally     | Scripts can be executed on the browser without Internet              | :negative_squared_cross_mark: |
+| Scripts Locally     | Scripts can be executed in the browser without Internet              | :negative_squared_cross_mark: |
+| Scripts Locally     | Generate png files from collected data without Internet service      | :negative_squared_cross_mark: |
 
 ## Services used
 
