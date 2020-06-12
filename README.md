@@ -1,5 +1,8 @@
 # Spetrometer Python
 
+[![Build Status](https://travis-ci.com/OpnTec/spectrometer-python.svg?branch=master)](https://travis-ci.com/OpnTec/spectrometer-python)
+[![Gitter](https://badges.gitter.im/fossasia/pslab.svg)](https://gitter.im/fossasia/pslab?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
+
 This repository provides scripts for the open spectrometer project to enable practitioners, students and citizen scientists to collect data with their spectrometer and have a good and fun learning experience. Enjoy!
 
 The open spectrometer project consists of a web cam, simple lasercut parts, battery casing and a suitable LED lightning component. The spectrometer connects to a computer via USB, where the user can run the scripts provided in this repository to run experiments and take measurements. The two main components of this repository are analyse.py and calibrate.py. The analyse.py script is used to plot the absorbance spectra of measurements taken with a webcam spectrometer. The calibrate.py is useful for advanced users who want to calibrate their device setup to provide measurements and data in a very high quality.
@@ -7,6 +10,11 @@ The open spectrometer project consists of a web cam, simple lasercut parts, batt
 ## Open Science and Background
 
 By definition science should be open and reproducible. So, the outcome of an experiment can be verified by anyone. Unfortunately today this is not always the case. In order to be able to verify experiments all components used in an experiment should be openly accessible. This includes the software and hardware of scientific instruments. Our spectrometer project follows this path. By giving access to all layers of the device used in a scientific experiment user can develop a deep understanding how scientific measurements are taken and practicioners are able to critically understand the limitations of the particular instrument.
+
+## Communication
+
+The spectrometer community is still small. There are overlaps with the Pocket Science Lab team. To stay connected with different community members we continue to use the PSLab Gitter channel for the beginning. We will set up a dedicated channel once the project is more established. Please join us here:
+* [Pocket Science Channel](https://gitter.im/fossasia/pslab)
 
 ## Features
 
