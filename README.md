@@ -20,7 +20,17 @@ The spectrometer community is still small. There are overlaps with the Pocket Sc
 
 * Transmit data using USB from a compatible spectrometer to a computer
 * Run analyse.py script and generate png file
-* Calibrate using calibrate.py
+* 
+
+## Features and Implementation Status
+
+|   **Feature**       | **Description**                                                      | **Status**            |
+|---------------------|----------------------------------------------------------------------|-----------------------|
+| USB Connection      | Transmit data using USB from a compatible spectrometer to a computer | :heavy_check_mark:    |
+| Generate PNG        | Run analyse.py script and generate png file                          | :heavy_check_mark:    |
+| Calibration         | Calibrate using calibrate.py                                         | :heavy_check_mark:    |
+| Scripts in Browers  | Scripts can be executed in the browser using repl.it                 | :heavy_check_mark:    |
+| Scripts Locally     | Scripts can be executed on the browser without Internet              | :negative_squared_cross_mark: |
 
 ## Services used
 
