@@ -28,8 +28,8 @@ The spectrometer community is still small. There are overlaps with the Pocket Sc
 
 ## Services used
 
-* We use repl.it to run the Python script in the browser https://repl.it/@DIYanalytics/SpectrometryScript
-* The script generates the png file from the experiment data using the web service of https://spectralworkbench.org
+* We use repl.it to run the Python script in the browser [repl.it/@DIYanalytics/SpectrometryScript](https://repl.it/@DIYanalytics/SpectrometryScript)
+* The script generates the png file from the experiment data using the web service of [spectralworkbench.org](https://spectralworkbench.org)
 
 ## How to use analyse.py to do experiments and collect data
 
