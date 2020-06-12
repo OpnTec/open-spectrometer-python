@@ -16,12 +16,6 @@ By definition science should be open and reproducible. So, the outcome of an exp
 The spectrometer community is still small. There are overlaps with the Pocket Science Lab team. To stay connected with different community members we continue to use the PSLab Gitter channel for the beginning. We will set up a dedicated channel once the project is more established. Please join us here:
 * [Pocket Science Channel](https://gitter.im/fossasia/pslab)
 
-## Features
-
-* Transmit data using USB from a compatible spectrometer to a computer
-* Run analyse.py script and generate png file
-* 
-
 ## Features and Implementation Status
 
 |   **Feature**       | **Description**                                                      | **Status**            |
