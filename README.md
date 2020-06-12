@@ -30,13 +30,13 @@ By definition science should be open and reproducible. So, the outcome of an exp
 
 ## How to calibrate your device with calibrate.py
 
-Calibrating a spectrometer means graduating the values that otherwise would represent pixel, and turning them into wavelength, which is what the spectrometer is meant to measure. In order to create a correlation between pixels and wavelengths, a mercury light is used, a compact fluorescent light (CFL). Because of it's sharp emission peaks, it is possible to assign to some pixels a specific wavelength value.
+Calibrating a spectrometer means graduating the values that otherwise would represent pixel, and turning them into wavelength, which is what the spectrometer is meant to measure. In order to create a correlation between pixels and wavelengths, a mercury light is used, a compact fluorescent light (CFL). Because of its sharp emission peaks, it is possible to assign to some pixels a specific wavelength value.
 
 As a reference you can use Wikipedia to view an image for the fluorescent lightning spectrum [here](https://commons.wikimedia.org/wiki/File:Fluorescent_lighting_spectrum_peaks_labelled.png) .
 
 Steps to use calibrate.py:
 
-1. Run the script ShowSpectrum_ForCalibratingPeaks.py with the file produced with the CFL.
+1. Run the script calibrate.py with the file produced with the compact fluoreschent light (CFL).
 2. Use the magnification lens to note at which pixel corresponds which peak in the plot of the wikipedia reference.
 3. Take at least 3 correlations, but the more, the better.
 4. Open the main script, and insert (replace) in increasing order the pixel and waveleghts previously noted in the respetive slots.
