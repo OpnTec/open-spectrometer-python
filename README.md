@@ -9,7 +9,7 @@ The open spectrometer project consists of a web cam, simple lasercut parts, batt
 
 ## Open Science and Background
 
-By definition science should be open and reproducible. So, the outcome of an experiment can be verified by anyone. Unfortunately today this is not always the case. In order to be able to verify experiments all components used should be openly accessible. This includes the software and hardware of scientific instruments. Our spectrometer project follows this path. By giving access to all layers of the device used in a scientific experiment users can develop a deep understanding how scientific measurements are taken and practicioners are able to critically understand the limitations of one particular instrument.
+By definition science should be open and reproducible. So, the outcome of an experiment can be verified by anyone. Unfortunately today this is not always the case. In order to be able to verify experiments all components used should be openly accessible. This includes the software and hardware of scientific instruments. Our spectrometer project follows this path. By giving access to all layers of the device used in a scientific experiment users can develop a deep understanding how scientific measurements are taken and practitioners are able to critically understand the limitations of one particular instrument.
 
 ## Communication
 
@@ -34,8 +34,8 @@ The spectrometer community is still small. There are overlaps with the Pocket Sc
 
 ## How to use analyse.py to do experiments and collect data
 
-1. Connect the spetrometer via USB to your computer
-2. Transfer the liquuid sample in the cuvette (liquid container for spectroscopy) and locate it in the spectrometer. Incase of chlorophyll A and B, you might do your own extraction and separation.
+1. Connect the spectrometer via USB to your computer
+2. Transfer the liquid sample in the cuvette (liquid container for spectroscopy) and locate it in the spectrometer. Incase of chlorophyll A and B, you might do your own extraction and separation.
 3. Take measurements with the webcam spectrometer using the spectral workbench mentioned above.
 4. Insert the filename of your reference into the referenceFile slot, and all the filenames of the samples into the samples slot, separated by a comma.
 5. Insert the desired title of the plot below and headers for the legend.
@@ -49,10 +49,10 @@ As a reference you can use Wikipedia to view an image for the fluorescent lightn
 
 Steps to use calibrate.py:
 
-1. Run the script calibrate.py with the file produced with the compact fluoreschent light (CFL).
+1. Run the script calibrate.py with the file produced with the compact fluorescent light (CFL).
 2. Use the magnification lens to note at which pixel corresponds which peak in the plot of the wikipedia reference.
 3. Take at least 3 correlations, but the more, the better.
-4. Open the main script, and insert (replace) in increasing order the pixel and waveleghts previously noted in the respetive slots.
+4. Open the main script, and insert (replace) in increasing order the pixel and wavelenghts previously noted in the respective slots.
 
 ## Contribution
 
