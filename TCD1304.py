@@ -11,8 +11,6 @@ the analog voltage signal shall be saved over the time and be integrated to get 
 the algotithims still needs to be definded.
 
 import argparse
-import csv
-import json
 import platform
 import os.path
 import shutil
