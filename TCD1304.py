@@ -35,6 +35,7 @@ from pslab.instrument.power_supply import PowerSupply
 frequency_master_clock = 2e6 # no need to specify the variable type (float). frequency_master_clock = float(2e6) turns into frequency_master_clock = 2e6. Same for integration_time variable. Im Datentyp float werden reele Zahlen in Exponentialdarstellung geschrieben (also Gleitkommazahlen). float(2e6) turns 2e6 which is already a float into a float. In other words, it does nothing; However f.e. 280,7 would have also been linked to float instead of int
 integration_time = 1.85e-3 # time in seconds
 oscillator_frequency = 128e6 #frequency of the oscilliator in Mhz
+integration_elements = 3694 #according to timing requests
 
 class TCD1304():
     def __init__(
@@ -73,7 +74,14 @@ class TCD1304():
         level. high level can be quite short
         '''
 
-    def icg_clock ():           #  on SQ3 starts and stops the reading of the sensor; this third clock is the slowest clock
+    def icg_clock (self):           #  on SQ3 starts and stops the reading of the sensor; this third clock is the slowest clock
+        self.pwmgen.set_state()
+            for pulse in range(integration_elements):
+                self.pwmgen.set_state(sq3=True)
+                time.sleep(integration_time / 2)
+                self.pwmgen.set_state(sq3=False)
+                time.sleep(integration_time / 2)
+        
         '''
         normal state of icg is a high level. Start of the reading is on the rising
         flank of the voltage. To start the reading voltage shall drop to low and rise 
