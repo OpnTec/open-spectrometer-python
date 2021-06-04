@@ -19,11 +19,11 @@ import time
 from itertools import zip_longest
 from typing import List, Tuple
 
-import numpy as np
+
 
 '''
 
-
+import numpy as np
 import time
 import math
 from pslab.instrument.waveform_generator import PWMGenerator
@@ -36,6 +36,9 @@ frequency_master_clock = 2e6 # no need to specify the variable type (float). fre
 integration_time = 1.85e-3 # time in seconds
 oscillator_frequency = 128e6 #frequency of the oscilliator in Mhz
 integration_elements = 3694 #according to timing requests
+microseconds_in_second = 1e6
+prescaler = int(math.log(oscillator_frequency / frequency_master_clock) / math.log(2))   # When setting a frequency by mapping the reference clock directly to a PWM output, only frequencies which are even factors of 128 MHz (the frequency of the PSLab's main oscillator) are available. The frequency is therefore not set by specifying the frequency itself, but by setting a prescaler.
+
 
 class TCD1304():
     def __init__(
@@ -54,6 +57,8 @@ class TCD1304():
         self.min_voltagerange_clock = min_voltagerange_clock
         self.max_voltagerange_clock = max_voltagerange_clock
         self.pwmgen = PWMGenerator() #once assigned in __init__ self.pwmgen can be used in other methods
+        self.scope = Oscilloscope ()
+        
         
     def power_source ():        # puts a voltage of 4V on PV1
         ps = PowerSupply()
@@ -61,29 +66,27 @@ class TCD1304():
         ps.pv1
     
     def master_clock (self):        # puts PWM with frequency of 2MHz on SQ1; masterclock is the fastest clock
-        prescaler = int(math.log(oscillator_frequency / frequency_master_clock) / math.log(2))   # When setting a frequency by mapping the reference clock directly to a PWM output, only frequencies which are even factors of 128 MHz (the frequency of the PSLab's main oscillator) are available. The frequency is therefore not set by specifying the frequency itself, but by setting a prescaler.
         self.pwmgen.map_reference_clock(["SQ1"], prescaler)    
     
-    def sh_clock (self):           #  on SQ2 sets pulse for the integrationtime
-        return self.pwmgen.generate() #is the return attribute the one to choose in order to set a second clock?
+    def sh_clock (self):           #  on SQ2 sets pulse for the integrationtime. Running the Sensor in shutter mode try with a frequency of 1/4 of master_clock. tint (min) = 10µs
+        self.pwmgen.generate(["SQ2"], prescaler/4 ) 
 
-        ''' 
-        integrationtime is started by the falling flank of voltageoutput. 
-        the time for integration must be longer than 3_694 Elements of fmc.
-        sh clock is started before icg is started. normal state of sh is a low
-        level. high level can be quite short
-        '''
 
     def icg_clock (self):           #  on SQ3 starts and stops the reading of the sensor; this third clock is the slowest clock
         self.pwmgen.set_state()
-            for pulse in range(integration_elements):
-                self.pwmgen.set_state(sq3=True)
-                time.sleep(integration_time / 2)
-                self.pwmgen.set_state(sq3=False)
-                time.sleep(integration_time / 2)
+         for pulse in range(integration_elements):
+            self.pwmgen.set_state(sq3=True)
+            time.sleep(integration_time / 2)
+            self.pwmgen.set_state(sq3=False)
+            time.sleep(integration_time / 2)
         
         '''
         normal state of icg is a high level. Start of the reading is on the rising
         flank of the voltage. To start the reading voltage shall drop to low and rise 
         to high again.
         '''
+    def analog_signal_read (self):
+        self.scope = Oscilloscope()
+        x, y = scope.capture (1, integration_elements, (integration_time / integration_elements)*microseconds_in_second) # Parameters set are (Ch1, amount of samples(3694), time between samples (~0,5µs)) 
+        analog_measurement = np.ndarray ()
+        return analog_measurement  # this should put the Measurements and timestamps in an array
