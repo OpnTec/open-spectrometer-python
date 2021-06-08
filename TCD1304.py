@@ -41,7 +41,6 @@ class TCD1304():
         frequency = frequency_master_clock, #default frequency of masterclock 2 MHz; # no need to specify the variable type (float). View comment in L37
         min_voltagerange_clock: float = 0, #it says that min_voltagerange_clock should (!) be a float. Otherwise it would not turn into a float automatically. Output on float will be 0.0 V and on int 0 V.
         max_voltagerange_clock: float = 4,
-        pwmgen = ... # not sure if pwmgen needs to be assigned to a value ??
         ): 
 
         self.min_masterclock_frequency = min_masterclock_frequency #initializing starts from here (? Not sure though)
@@ -63,9 +62,6 @@ class TCD1304():
         time.sleep(read_out_time)
         self.pwmgen.set_state(sq3=False)
 
-
-    
-    
     def master_clock (self):        # puts PWM with frequency of 2MHz on SQ1; masterclock is the fastest clock
        prescaler = int(math.log(oscillator_frequency / frequency_master_clock) / math.log(2))   # When setting a frequency by mapping the reference clock directly to a PWM output, only frequencies which are even factors of 128 MHz (the frequency of the PSLab's main oscillator) are available. The frequency is therefore not set by specifying the frequency itself, but by setting a prescaler.
        self.pwmgen.map_reference_clock(["SQ1"], prescaler)    
@@ -77,11 +73,9 @@ class TCD1304():
         self.scope.select_range('CH1', max_voltage_output)   # voltagerange should be fitted to the sensors output for better resolution. sensor otput is between 2V-3V due to datasheet
         self.scope.configure_trigger(channel = 'CH1', voltage = min_voltage_output ) # starts recording , when voltage is over a certain level
         self.scope.capture(channels=1, samples=integration_elements*samples_per_element, timegap=integration_time/samples_per_element, block=False)
-        self.icg_clock(self)
-        x, y= self.scope.fetch_data()
-        diff = abs(x,y[1, 0] - min_voltage_output )
-        analog_measurement = np.ndarray ()
-        return analog_measurement  # this should put the Measurements and timestamps in an array
+        icg_clock()
+        x, = self.scope.capture()  # putting timestamps into numpy array (don't know, if that is necessary for our purpose)
+        y, = self.scope.fetch_data()  # collecting the Voltage in nonblocking mode
 
 
 
