@@ -51,22 +51,19 @@ class TCD1304():
         self.max_voltagerange_clock = max_voltagerange_clock
         self.pwmgen = PWMGenerator() #once assigned in __init__ self.pwmgen can be used in other methods
         self.scope = Oscilloscope ()
-        
+        self.ps = PowerSupply()
         
     def power_source ():        # puts a voltage of 4V on PV1
         ps = PowerSupply()
         ps.pv1 = 4
         ps.pv1
-    
-    def analog_signal_read (self, block:False):
-        self.scope = Oscilloscope()
-        self.scope.select_range('CH1', max_voltage_output)   # voltagerange should be fitted to the sensors output for better resolution. sensor otput is between 2V-3V due to datasheet
-        self.scope.configure_trigger(channel = 'CH1', voltage = min_voltage_output ) # starts recording , when voltage is over a certain level
-        self.scope.capture(channels=1, samples=integration_elements*samples_per_element, timegap=integration_time/samples_per_element)
-        y1, y2 = self.scope.fetch_data()
-        diff = abs(y1,y2[1, 0] - min_voltage_output )
-        analog_measurement = np.ndarray ()
-        return analog_measurement  # this should put the Measurements and timestamps in an array
+
+    def icg_clock (self):           #  on SQ3 starts and stops the reading of the sensor; this third clock is the slowest clock
+        self.pwmgen.set_state(sq3=True)
+        time.sleep(read_out_time)
+        self.pwmgen.set_state(sq3=False)
+
+
     
     
     def master_clock (self):        # puts PWM with frequency of 2MHz on SQ1; masterclock is the fastest clock
@@ -76,14 +73,17 @@ class TCD1304():
     def sh_clock (self):           #  on SQ2 sets pulse for the integrationtime. Running the Sensor in shutter mode try with tint (min) = 10µs
         self.pwmgen.generate(["SQ2"], 1/integration_time, [0.5] ) 
 
+    def analog_signal_read (self, block:False):
+        self.scope.select_range('CH1', max_voltage_output)   # voltagerange should be fitted to the sensors output for better resolution. sensor otput is between 2V-3V due to datasheet
+        self.scope.configure_trigger(channel = 'CH1', voltage = min_voltage_output ) # starts recording , when voltage is over a certain level
+        self.scope.capture(channels=1, samples=integration_elements*samples_per_element, timegap=integration_time/samples_per_element, block=False)
+        self.icg_clock(self)
+        x, y= self.scope.fetch_data()
+        diff = abs(x,y[1, 0] - min_voltage_output )
+        analog_measurement = np.ndarray ()
+        return analog_measurement  # this should put the Measurements and timestamps in an array
 
-    def icg_clock (self):           #  on SQ3 starts and stops the reading of the sensor; this third clock is the slowest clock
-        self.pwmgen.set_state()
-        for pulse in range(integration_elements):
-            self.pwmgen.set_state(sq3=True)
-            time.sleep(read_out_time / 2)
-            self.pwmgen.set_state(sq3=False)
-            time.sleep(read_out_time / 2)
-        
+
+
     
    
