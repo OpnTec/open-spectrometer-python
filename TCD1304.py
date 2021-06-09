@@ -73,10 +73,9 @@ class TCD1304():
         self.scope.select_range('CH1', max_voltage_output)   # voltagerange should be fitted to the sensors output for better resolution. sensor otput is between 2V-3V due to datasheet
         self.scope.configure_trigger(channel = 'CH1', voltage = min_voltage_output ) # starts recording , when voltage is over a certain level
         self.scope.capture(channels=1, samples=integration_elements*samples_per_element, timegap=integration_time/samples_per_element, block=False)
-        icg_clock()
-        x, = self.scope.capture()  # putting timestamps into numpy array (don't know, if that is necessary for our purpose)
+        self.icg_clock()
         y, = self.scope.fetch_data()  # collecting the Voltage in nonblocking mode
-
+        return y; #returns samples
 
 
     
