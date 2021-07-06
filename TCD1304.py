@@ -1,5 +1,6 @@
-"""
-The Sensor shall be connected to the PSLab as Following:
+"""TCD1304 linear CCD driver for Open Spectrometer.
+
+The sensor shall be connected to the PSLab as following:
 Pin 1 of the sensorboard: master_clock --> SQ1 on PSLab
 Pin 2: sh_clock --> SQ2
 Pin 3: icg_clock --> SQ3
@@ -8,53 +9,69 @@ Pin 5: GND --> GND
 Pin 6: OS --> CH1
 """
 
-import numpy as np
-import time
 import math
-from pslab.instrument.waveform_generator import PWMGenerator
-from pslab.instrument.oscilloscope import Oscilloscope
-from pslab.serial_handler import SerialHandler
-from pslab.instrument.logic_analyzer import LogicAnalyzer
-from pslab.instrument.power_supply import PowerSupply
+import time
 
-FREQUENCY_MASTER_CLOCK = 2e6
-INTEGRATION_ELEMENTS = 3694 
-INTEGRATION_TIME =  10e-6 
-OSCILLATOR_FREQUENCY = 128e6 
-MICROSECONDS = 1e6
-MIN_VOLTAGE_OUTPUT = 2.0
-MAX_VOLTAGE_OUTPUT = 4.0 
-SAMPLES_PER_ELEMENT = 2
-READ_OUT_TIME = INTEGRATION_TIME*INTEGRATION_ELEMENTS
+from pslab.serial_handler import SerialHandler
+from pslab.instrument.oscilloscope import Oscilloscope
+from pslab.instrument.power_supply import PowerSupply
+from pslab.instrument.waveform_generator import PWMGenerator
+
+_FREQUENCY_MASTER_CLOCK = 2e6
+_INTEGRATION_ELEMENTS = 3694
+_INTEGRATION_TIME = 10e-6
+_OSCILLATOR_FREQUENCY = 128e6
+_MICROSECONDS = 1e6
+_MIN_VOLTAGE_OUTPUT = 2.0
+_MAX_VOLTAGE_OUTPUT = 4.0
+_SAMPLES_PER_ELEMENT = 2
+_READ_OUT_TIME = _INTEGRATION_TIME * _INTEGRATION_ELEMENTS
+
 
 class TCD1304:
-    def __init__(
-        self,  ): 
-        self.pwmgen = PWMGenerator()
-        self.scope = Oscilloscope ()
-        self.ps = PowerSupply()
-        
-    def set_power_source():
-        self.ps.pv1 = 4
+    """The TCD1304 is a linear CCD suitable for visible spectrum analysis."""
 
-    def start_icg_clock(self):
-        self.pwmgen.set_state(sq3=True)
-        time.sleep(READ_OUT_TIME)
-        self.pwmgen.set_state(sq3=False)
+    def __init__(self, device: SerialHandler = None):
+        self._device = SerialHandler() if device is None else device
+        self._pwmgen = PWMGenerator(self._device)
+        self._scope = Oscilloscope(self._device)
+        self._ps = PowerSupply(self._device)
+        self.poweron()
+        self._start_master_clock()
+        self._start_sh_clock()
 
-    def start_master_clock(self):       
-       prescaler = int(math.log(OSCILLATOR_FREQUENCY / FREQUENCY_MASTER_CLOCK) / math.log(2))  
-       self.pwmgen.map_reference_clock(["SQ1"], prescaler)    
-    
-    def start_sh_clock(self):         
-        self.pwmgen.generate(["SQ2"], 1/INTEGRATION_TIME, [0.5] ) 
+    def poweron(self):
+        """Turn TCD1304 on."""
+        self._ps.pv1 = 4
+
+    def poweroff(self):
+        """Turn TCD1304 off."""
+        self._ps.pv1 = 0
+
+    def _start_icg_clock(self):
+        self._pwmgen.set_state(sq3=True)
+        time.sleep(_READ_OUT_TIME)
+        self._pwmgen.set_state(sq3=False)
+
+    def _start_master_clock(self):
+        prescaler = int(
+            math.log(_OSCILLATOR_FREQUENCY / _FREQUENCY_MASTER_CLOCK) / math.log(2)
+        )
+        self._pwmgen.map_reference_clock(["SQ1"], prescaler)
+
+    def _start_sh_clock(self):
+        self._pwmgen.generate(["SQ2"], 1 / _INTEGRATION_TIME, [0.5])
 
     def read_signal(self):
-        self.scope.select_range('CH1', MAX_VOLTAGE_OUTPUT)   
-        self.scope.configure_trigger(channel = 'CH1', voltage = MIN_VOLTAGE_OUTPUT ) 
-        self.scope.capture(channels=1, samples=INTEGRATION_ELEMENTS*SAMPLES_PER_ELEMENT, timegap=INTEGRATION_TIME/SAMPLES_PER_ELEMENT, block=False)
-        self.icg_clock()
-        y, = self.scope.fetch_data() 
-        return y 
-
-   
+        """Start the ICG clock and read the analog output from the TCD1304."""
+        self._scope.select_range("CH1", _MAX_VOLTAGE_OUTPUT)
+        self._scope.configure_trigger(channel="CH1", voltage=_MIN_VOLTAGE_OUTPUT)
+        self._scope.capture(
+            channels=1,
+            samples=_INTEGRATION_ELEMENTS * _SAMPLES_PER_ELEMENT,
+            timegap=_INTEGRATION_TIME / _SAMPLES_PER_ELEMENT * _MICROSECONDS,
+            block=False,
+        )
+        self._start_icg_clock()
+        (y,) = self._scope.fetch_data()
+        return y
