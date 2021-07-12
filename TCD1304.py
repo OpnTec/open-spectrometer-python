@@ -42,7 +42,7 @@ class TCD1304:
 
     def poweron(self):
         """Turn TCD1304 on."""
-        self._ps.pv1 = 4
+        self._ps.pv1 = 5
 
     def poweroff(self):
         """Turn TCD1304 off."""
