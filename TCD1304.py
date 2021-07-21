@@ -17,26 +17,33 @@ from pslab.instrument.oscilloscope import Oscilloscope
 from pslab.instrument.power_supply import PowerSupply
 from pslab.instrument.waveform_generator import PWMGenerator
 
-_FREQUENCY_MASTER_CLOCK = 2e6
-_INTEGRATION_ELEMENTS = 3694
-_INTEGRATION_TIME = 10e-6
 _OSCILLATOR_FREQUENCY = 128e6
 _MICROSECONDS = 1e6
-_MIN_VOLTAGE_OUTPUT = 2.0
-_MAX_VOLTAGE_OUTPUT = 4.0
-_SAMPLES_PER_ELEMENT = 2
-_READ_OUT_TIME = _INTEGRATION_TIME * _INTEGRATION_ELEMENTS
 
 
 class TCD1304:
     """The TCD1304 is a linear CCD suitable for visible spectrum analysis."""
 
-    def __init__(self, device: SerialHandler = None):
+    _INTEGRATION_ELEMENTS = 3694
+    _MIN_VOLTAGE_OUTPUT = 2
+    _MAX_VOLTAGE_OUTPUT = 4
+    _SAMPLES_PER_ELEMENT = 2
+
+    def __init__(
+        self,
+        device: SerialHandler = None,
+        integration_time: float = 10e-6,
+        master_clock_frequency: float = 2e6,
+    ):
         self._device = SerialHandler() if device is None else device
         self._pwmgen = PWMGenerator(self._device)
         self._scope = Oscilloscope(self._device)
         self._ps = PowerSupply(self._device)
+        self.integration_time = integration_time
+        self.master_clock_frequency = master_clock_frequency
+
         self.poweron()
+        self._pwmgen.set_state(sq3=True)
         self._start_master_clock()
         self._start_sh_clock()
 
@@ -49,27 +56,30 @@ class TCD1304:
         self._ps.pv1 = 0
 
     def _start_icg_clock(self):
-        self._pwmgen.set_state(sq3=True)
-        time.sleep(_READ_OUT_TIME)
+        read_out_time = self._INTEGRATION_ELEMENTS * self.integration_time
         self._pwmgen.set_state(sq3=False)
+        self._pwmgen.set_state(sq3=True)
+        time.sleep(read_out_time)
+        self._pwmgen.set_state(sq3=False)
+        self._pwmgen.set_state(sq3=True)
 
     def _start_master_clock(self):
         prescaler = int(
-            math.log(_OSCILLATOR_FREQUENCY / _FREQUENCY_MASTER_CLOCK) / math.log(2)
+            math.log(_OSCILLATOR_FREQUENCY / self.master_clock_frequency) / math.log(2)
         )
         self._pwmgen.map_reference_clock(["SQ1"], prescaler)
 
     def _start_sh_clock(self):
-        self._pwmgen.generate(["SQ2"], 1 / _INTEGRATION_TIME, [0.5])
+        self._pwmgen.generate(["SQ2"], 1 / self.integration_time, [0.5])
 
     def read_signal(self):
         """Start the ICG clock and read the analog output from the TCD1304."""
-        self._scope.select_range("CH1", _MAX_VOLTAGE_OUTPUT)
-        self._scope.configure_trigger(channel="CH1", voltage=_MIN_VOLTAGE_OUTPUT)
+        self._scope.select_range("CH1", self._MAX_VOLTAGE_OUTPUT)
+        self._scope.configure_trigger(channel="CH1", voltage=self._MIN_VOLTAGE_OUTPUT)
         self._scope.capture(
             channels=1,
-            samples=_INTEGRATION_ELEMENTS * _SAMPLES_PER_ELEMENT,
-            timegap=_INTEGRATION_TIME / _SAMPLES_PER_ELEMENT * _MICROSECONDS,
+            samples=self._INTEGRATION_ELEMENTS * self._SAMPLES_PER_ELEMENT,
+            timegap=self.integration_time / self._SAMPLES_PER_ELEMENT * _MICROSECONDS,
             block=False,
         )
         self._start_icg_clock()
